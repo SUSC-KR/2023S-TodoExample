@@ -37,11 +37,16 @@ class _ListTodoState extends State<ListTodoPage> {
       ),
       body: buildList(context),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const AddTodoPage())),
+        onPressed: () => onCreate(),
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  void onCreate() async {
+    await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const AddTodoPage()));
+    loadTodos();
   }
 
   Widget buildList(BuildContext context) {
@@ -59,7 +64,8 @@ class _ListTodoState extends State<ListTodoPage> {
 
     return ListView.builder(
       itemCount: todos!.length,
-      itemBuilder: (context, index) => TodoWidget(todo: todos![index]),
+      itemBuilder: (context, index) =>
+          TodoWidget(todo: todos![index], refresh: () => loadTodos()),
     );
   }
 }
