@@ -5,49 +5,18 @@ import 'package:susc_2023s_todo_example/model/todo.mapper.dart';
 class TodoRepository {
   static final TodoRepository instance = TodoRepository();
 
-  int nextId() {
-    // id를 unix timestamp로 생성
-    return DateTime.now().millisecondsSinceEpoch;
-  }
-
   Future<List<Todo>> listTodo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> todoList = prefs.getStringList('todoList') ?? [];
-    return todoList.map((e) => TodoMapper.fromJson(e)).toList()
-      ..sort((a, b) => a.date.compareTo(b.date));
+    List<Todo> mappedTodoList =
+        todoList.map((e) => TodoMapper.fromJson(e)).toList();
+    mappedTodoList.sort((a, b) => a.date.compareTo(b.date));
+    return mappedTodoList;
   }
 
-  Future<Todo?> getTodoById({
-    required int id,
-  }) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> rawTodoList = prefs.getStringList('todoList') ?? [];
-    List<Todo> todoList =
-        rawTodoList.map((e) => TodoMapper.fromJson(e)).toList();
-
-    for (Todo todo in todoList) {
-      if (todo.id == id) {
-        return todo;
-      }
-    }
-
-    return null;
-  }
-
-  Future<Todo> createTodo({
-    required String title,
-    required String description,
-    required DateTime date,
-  }) async {
+  Future<Todo> createTodo(Todo todo) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> todoList = prefs.getStringList('todoList') ?? [];
-
-    Todo todo = Todo(
-      id: nextId(),
-      title: title,
-      description: description,
-      date: date,
-    );
 
     todoList.add(TodoMapper.toJson(todo));
     await prefs.setStringList('todoList', todoList);

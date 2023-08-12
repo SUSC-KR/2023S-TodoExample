@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:susc_2023s_todo_example/model/todo.repository.dart';
+import 'package:susc_2023s_todo_example/model/todo.dart';
 
-class AddTodoPage extends StatefulWidget {
-  const AddTodoPage({Key? key}) : super(key: key);
-
-  @override
-  State<AddTodoPage> createState() => _AddTodoPageState();
-}
-
-class _AddTodoPageState extends State<AddTodoPage> {
+class AddTodoPage extends StatelessWidget {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   final TextEditingController titleController = TextEditingController();
@@ -17,13 +10,16 @@ class _AddTodoPageState extends State<AddTodoPage> {
 
   Future<void> addTodo(BuildContext context) async {
     if (formKey.currentState!.validate()) {
-      await TodoRepository.instance.createTodo(
-          title: titleController.text,
-          description: descriptionController.text,
-          date: DateTime.parse(dateController.text));
+      // id를 unix timestamp로 생성
+      int newId = DateTime.now().millisecondsSinceEpoch;
+      Todo newTodo = Todo(
+        id: newId,
+        title: titleController.text,
+        description: descriptionController.text,
+        date: DateTime.parse(dateController.text),
+      );
 
-      if (!mounted) return;
-      Navigator.pop(context);
+      Navigator.pop(context, newTodo);
     }
   }
 

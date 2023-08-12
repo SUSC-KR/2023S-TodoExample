@@ -14,9 +14,9 @@ class TodoApp extends StatelessWidget {
       title: 'TodoApp',
       initialRoute: '/',
       routes: {
-        '/': (context) => const ListTodoPage(),
-        '/add': (context) => const AddTodoPage(),
-        '/edit': (context) => const EditTodoPage(),
+        '/': (context) => ListTodoPage(),
+        '/add': (context) => AddTodoPage(),
+        '/edit': (context) => EditTodoPage(),
       },
     );
   }

@@ -1,17 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:susc_2023s_todo_example/model/todo.dart';
-import 'package:susc_2023s_todo_example/model/todo.repository.dart';
 
-class EditTodoPage extends StatefulWidget {
-  const EditTodoPage({Key? key}) : super(key: key);
-
-  @override
-  State<EditTodoPage> createState() => _EditTodoPageState();
-}
-
-class _EditTodoPageState extends State<EditTodoPage> {
-  late Todo todo;
-
+class EditTodoPage extends StatelessWidget {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   final TextEditingController titleController = TextEditingController();
@@ -22,21 +12,20 @@ class _EditTodoPageState extends State<EditTodoPage> {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 
-  Future<void> editTodo(BuildContext context) async {
+  Future<void> editTodo(BuildContext context, int todoId) async {
     if (formKey.currentState!.validate()) {
-      await TodoRepository.instance.editTodo(
-          id: todo.id,
+      Todo editedTodo = Todo(
+          id: todoId,
           title: titleController.text,
           description: descriptionController.text,
           date: DateTime.parse(dateController.text));
-
-      Navigator.pop(context);
+      Navigator.pop(context, editedTodo);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    todo = ModalRoute.of(context)!.settings.arguments as Todo;
+    Todo todo = ModalRoute.of(context)!.settings.arguments as Todo;
 
     titleController.text = todo.title;
     descriptionController.text = todo.description;
@@ -93,7 +82,7 @@ class _EditTodoPageState extends State<EditTodoPage> {
                 SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                        onPressed: () => editTodo(context),
+                        onPressed: () => editTodo(context, todo.id),
                         child: const Text('수정')))
               ],
             ),

@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:susc_2023s_todo_example/model/todo.dart';
-import 'package:susc_2023s_todo_example/model/todo.repository.dart';
-
-typedef RefreshCallback = void Function();
 
 class TodoWidget extends StatelessWidget {
   final Todo todo;
 
-  final RefreshCallback refresh;
+  final void Function(Todo todo) onEdit;
+  final void Function(int todoId) onDelete;
 
   const TodoWidget({
     required this.todo,
-    required this.refresh,
-    Key? key,
-  }) : super(key: key);
+    required this.onEdit,
+    required this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,33 +26,33 @@ class TodoWidget extends StatelessWidget {
   }
 
   void showMenuBottomSheet(BuildContext context) async {
-    await showModalBottomSheet(
+    const int EDIT = 0;
+    const int DELETE = 1;
+
+    int? selection = await showModalBottomSheet(
       context: context,
       builder: (context) {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.edit),
-              title: const Text('수정'),
-              onTap: () async {
-                await Navigator.pushNamed(context, '/edit', arguments: todo);
-                Navigator.pop(context);
-              },
-            ),
+                leading: const Icon(Icons.edit),
+                title: const Text('수정'),
+                onTap: () => Navigator.pop(context, EDIT)),
             ListTile(
-              leading: const Icon(Icons.delete),
-              title: const Text('삭제'),
-              onTap: () async {
-                await TodoRepository.instance.deleteTodo(id: todo.id);
-                Navigator.pop(context);
-              },
-            ),
+                leading: const Icon(Icons.delete),
+                title: const Text('삭제'),
+                onTap: () => Navigator.pop(context, DELETE)),
           ],
         );
       },
     );
-    refresh();
+
+    if (selection == EDIT) {
+      onEdit(todo);
+    } else if (selection == DELETE) {
+      onDelete(todo.id);
+    }
   }
 
   int calculateDiff() {
